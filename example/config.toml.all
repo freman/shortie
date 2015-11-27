@@ -1,0 +1,36 @@
+# What host/port are we listening on?
+# valid options are :port and ip:port
+# listen = "192.168.0.1:8118"
+
+# Which storage engine are we going to use?
+#
+# The default option
+# storage = "vedis"
+#
+# The other choices are "redis" and "mongo"
+
+# Configuration options for the storage engines
+#
+# vedis - supports disk file or :mem:,
+# lets go with the defaults once again
+# [config.vedis]
+# store = ":mem:"
+#
+# Another example would be "/var/lib/shortie.vdb"
+
+# redis - has quite a few more configuration options
+# if you specify nothing then it'll use
+# [config.redis]
+# addr = "localhost:6379"
+# prefix = "shortie:"
+#
+# Other options include
+# db = 0
+# maxretries = 0
+# password = "secretbeezness"
+
+# mongo - another options
+# the defaults for which are
+# [config.mongo]
+# url = "mongodb://localhost"
+# collection = "shortie"
