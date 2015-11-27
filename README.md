@@ -13,6 +13,12 @@ Works out of the box with no external database or configuration however configur
 ## Quick start
 
  1. go get github.com/freman/shortie
+ 2. rm ./bin/shortie
+ 3. go get github.com/GeertJohan/go.rice/rice
+ 4. ./bin/rice --import-path=github.com/freman/shortie embed-go
+ 5. go install github.com/freman/shortie
+
+That's it, the `shortie` binary in bin directory is now 100% self contained and ready to roll
 
 ## Configuration
 
