@@ -25,7 +25,7 @@ func (m *mongoStorage) Open(c *shortieConfiguration) (err error) {
 		Url:        "mongodb://localhost",
 		Collection: "shortie",
 	}
-	if err = c.UnifyStorageConfiguration("mongo", &mongoConfig); err != nil {
+	if err = c.UnifySubConfiguration("mongo", &mongoConfig); err != nil {
 		return
 	}
 

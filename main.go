@@ -11,7 +11,6 @@ import (
 	"time"
 
 	"github.com/GeertJohan/go.rice"
-	"github.com/NorgannasAddOns/go-uuid"
 	"github.com/labstack/echo"
 	mw "github.com/labstack/echo/middleware"
 	"gopkg.in/tylerb/graceful.v1"
@@ -61,13 +60,24 @@ func main() {
 		log.Fatal("Invalid store specified in configuration")
 	}
 
+	identifier := GetIDInterface(config.IDInterface)
+	if identifier == nil {
+		log.Fatal("Invalid identifier specified in configuration")
+	}
+
 	if err = store.Open(config); err != nil {
 		if opError, ok := err.(*net.OpError); ok {
 			log.Fatalf("Problem connecting to %s[%s]: %s", config.StorageInterface, opError.Addr.String(), opError.Err.Error())
 		}
-		log.Fatal(err)
+		log.Print(err)
+		log.Fatal("Unable to configure storage interface")
 	}
 	defer store.Close()
+
+	if err = identifier.Setup(config); err != nil {
+		log.Print(err)
+		log.Fatal("Unable to configure identifier interface")
+	}
 
 	e := echo.New()
 
@@ -76,28 +86,28 @@ func main() {
 
 	assetHandler := http.FileServer(rice.MustFindBox("public").HTTPBox())
 
-	e.Get("/", func(c *echo.Context) error {
+	e.GET("/", func(c echo.Context) error {
 		return c.Redirect(http.StatusFound, "/shorten/")
 	})
 
-	e.Get("/shorten/*", func(c *echo.Context) error {
+	e.GET("/shorten/*", func(c echo.Context) error {
 		http.StripPrefix("/shorten/", assetHandler).
-			ServeHTTP(c.Response().Writer(), c.Request())
+			ServeHTTP(c.Response().Writer, c.Request())
 		return nil
 	})
 
-	e.Get("/favicon.ico", func(c *echo.Context) error {
+	e.GET("/favicon.ico", func(c echo.Context) error {
 		return c.Redirect(http.StatusMovedPermanently, "/shorten/favicon/favicon.ico")
 	})
 
-	e.Post("/shorten/shrink.json", func(c *echo.Context) error {
+	e.POST("/shorten/shrink.json", func(c echo.Context) error {
 		r := request{}
 		if err := c.Bind(&r); err != nil {
 			return err
 		}
 
 		if url := r.Url.String(); url != "" {
-			id := uuid.New("U")
+			id := identifier.Get()
 			if err = store.Store(id, url); err != nil {
 				return err
 			}
@@ -107,8 +117,8 @@ func main() {
 		return nil
 	})
 
-	e.Get("/:id", func(c *echo.Context) error {
-		url, err := store.Fetch(c.P(0))
+	e.GET("/:id", func(c echo.Context) error {
+		url, err := store.Fetch(c.Param("id"))
 
 		if err != nil {
 			return err
@@ -117,5 +127,7 @@ func main() {
 		return c.Redirect(http.StatusMovedPermanently, url)
 	})
 
-	graceful.ListenAndServe(e.Server(config.Listen), time.Second)
+	e.Server.Addr = config.Listen
+
+	graceful.ListenAndServe(e.Server, time.Second)
 }

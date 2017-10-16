@@ -12,7 +12,7 @@ type vedisConfiguration struct {
 
 func (v *vedisStorage) Open(c *shortieConfiguration) (err error) {
 	vedisConfig := vedisConfiguration{}
-	if err = c.UnifyStorageConfiguration("vedis", &vedisConfig); err != nil {
+	if err = c.UnifySubConfiguration("vedis", &vedisConfig); err != nil {
 		return
 	}
 

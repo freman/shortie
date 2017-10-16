@@ -20,7 +20,7 @@ func (r *redisStorage) Open(c *shortieConfiguration) (err error) {
 		},
 	}
 
-	if err = c.UnifyStorageConfiguration("redis", &redisConfig); err != nil {
+	if err = c.UnifySubConfiguration("redis", &redisConfig); err != nil {
 		return
 	}
 
