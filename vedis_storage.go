@@ -1,3 +1,5 @@
+// +build cgo
+
 package main
 
 import "github.com/icholy/vedis"
