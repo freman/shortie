@@ -38,7 +38,7 @@ func (i *snowflakeID) Get() string {
 }
 
 func init() {
-	RegisterIDInterface("norganna", func() IDInterface {
+	RegisterIDInterface("snowflake", func() IDInterface {
 		return &snowflakeID{}
 	})
 }
