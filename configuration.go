@@ -21,7 +21,7 @@ func loadConfiguration(file string) (*shortieConfiguration, error) {
 }
 
 func (c *shortieConfiguration) UnifySubConfiguration(name string, v interface{}) (err error) {
-	if c.md.IsDefined(name) {
+	if c.md.IsDefined("config", name) {
 		err = c.md.PrimitiveDecode(c.SubConfiguration[name], v)
 	}
 	return

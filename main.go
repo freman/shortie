@@ -129,5 +129,8 @@ func main() {
 
 	e.Server.Addr = config.Listen
 
-	graceful.ListenAndServe(e.Server, time.Second)
+	err = graceful.ListenAndServe(e.Server, time.Second)
+	if err != nil {
+		panic(err)
+	}
 }
