@@ -2,3 +2,4 @@
 config.toml
 shortie
 shortie.db
+rice-box.go
