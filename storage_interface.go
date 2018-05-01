@@ -9,6 +9,12 @@ type StorageInterface interface {
 	Fetch(string) (string, error)
 }
 
+type StorageAlias interface {
+	StoreAlias(string, string) error
+	StoreWithAlias(string, string, string) error
+	FetchAlias(string) (string, error)
+}
+
 func RegisterStorageInterface(name string, f func() StorageInterface) {
 	storageInterfaces[name] = f
 }

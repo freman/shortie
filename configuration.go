@@ -4,6 +4,8 @@ import "github.com/BurntSushi/toml"
 
 type shortieConfiguration struct {
 	md               toml.MetaData             `toml:"-"`
+	DisableUI        bool                      `toml:"disable_ui"`
+	RedirectTo       string                    `tonl:"redirect_to"`
 	Listen           string                    `toml:"listen"`
 	IDInterface      string                    `toml:"id"`
 	StorageInterface string                    `toml:"storage"`
