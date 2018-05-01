@@ -2,12 +2,29 @@
 # valid options are :port and ip:port
 # listen = "192.168.0.1:8118"
 
+# Disable the ui
+# disable_ui = false
+# redirect_to = "https://example.com"
+
 # Which storage engine are we going to use?
 #
 # The default option
 # storage = "vedis"
 #
-# The other choices are "redis" and "mongo"
+# The other choices are "redis", "boltdb" and "mongo"
+
+# What id generation are we going to use
+#
+# The default option
+# id = "snowflake"
+#
+# The other choicese are "incrementing" and "norganna"
+# "incrementing" has configuration as listed below
+
+# Which metrics engine are we going to use?
+# metrics = "noop_analytics"
+#
+# The other choices are "google_analytics"
 
 # Configuration options for the storage engines
 #
@@ -34,3 +51,21 @@
 # [config.mongo]
 # url = "mongodb://localhost"
 # collection = "shortie"
+
+# boltdb - more options
+# If you specify nothing then it'll use
+# [config.boltdb]
+# store = "shortie.db"
+
+# Configuration options for the metrics
+#
+# [config.google_analytics]
+# tracking_id = "UA-2xxxxx0-7"
+
+# Configuration options for the id generators
+#
+# [config.incrementing]
+# store_file = ".increment"
+# save_interval = "5s"
+# skip = 10
+# character_map = "WAQNGLXCeaw3bHS18EpYvocJki2xh5PB9fj7FsMdTuZr6DmnVy4UKqtRzg"

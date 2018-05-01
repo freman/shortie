@@ -1,6 +1,13 @@
 package main
 
-import "github.com/BurntSushi/toml"
+import (
+	"net"
+	"net/http"
+	"strings"
+
+	"github.com/BurntSushi/toml"
+	gct "github.com/freman/go-commontypes"
+)
 
 type shortieConfiguration struct {
 	md               toml.MetaData             `toml:"-"`
@@ -8,8 +15,10 @@ type shortieConfiguration struct {
 	RedirectTo       string                    `tonl:"redirect_to"`
 	Listen           string                    `toml:"listen"`
 	IDInterface      string                    `toml:"id"`
+	Metrics          string                    `toml:"metrics"`
 	StorageInterface string                    `toml:"storage"`
 	SubConfiguration map[string]toml.Primitive `toml:"config"`
+	TrustedUpstreams gct.Networks
 }
 
 func loadConfiguration(file string) (*shortieConfiguration, error) {
@@ -17,6 +26,9 @@ func loadConfiguration(file string) (*shortieConfiguration, error) {
 	config := shortieConfiguration{
 		Listen:           ":3000",
 		StorageInterface: "vedis",
+		IDInterface:      "snowflake",
+		Metrics:          "noop_analytics",
+		TrustedUpstreams: gct.PrivateNetworks,
 	}
 	config.md, err = toml.DecodeFile(file, &config)
 	return &config, err
@@ -27,4 +39,22 @@ func (c *shortieConfiguration) UnifySubConfiguration(name string, v interface{})
 		err = c.md.PrimitiveDecode(c.SubConfiguration[name], v)
 	}
 	return
+}
+
+func (c *shortieConfiguration) IP(r *http.Request) string {
+	rip, _, _ := net.SplitHostPort(r.RemoteAddr)
+	rIP := net.ParseIP(rip)
+
+	if c.TrustedUpstreams.Contains(rIP) {
+		for _, header := range []string{"x-real-ip", "x-forwarded-for"} {
+			slice := strings.Split(r.Header.Get(header), ",")
+			for i := len(slice) - 1; i >= 0; i-- {
+				if tmp := strings.TrimSpace(slice[i]); tmp != "" {
+					return tmp
+				}
+			}
+		}
+	}
+
+	return rip
 }

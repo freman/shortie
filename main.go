@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"flag"
+	"io"
 	"log"
 	"net"
 	"net/http"
@@ -73,6 +74,11 @@ func main() {
 		log.Fatal("Invalid identifier specified in configuration")
 	}
 
+	metrics := GetMetricsInterface(config.Metrics)
+	if metrics == nil {
+		log.Fatal("Invalid metrics specified in configuration")
+	}
+
 	if err = store.Open(config); err != nil {
 		if opError, ok := err.(*net.OpError); ok {
 			log.Fatalf("Problem connecting to %s[%s]: %s", config.StorageInterface, opError.Addr.String(), opError.Err.Error())
@@ -85,6 +91,11 @@ func main() {
 	if err = identifier.Setup(config); err != nil {
 		log.Print(err)
 		log.Fatal("Unable to configure identifier interface")
+	}
+
+	if err = metrics.Setup(config); err != nil {
+		log.Print(err)
+		log.Fatal("Unable to configure metrics interface")
 	}
 
 	e := echo.New()
@@ -158,7 +169,6 @@ func main() {
 		if err := c.Bind(&r); err != nil {
 			return err
 		}
-
 		s, isa := store.(StorageAlias)
 		if !isa {
 			return errors.New("Storage interface doesn't support aliases")
@@ -183,17 +193,18 @@ func main() {
 		return c.JSON(http.StatusOK, response{Url: url, Short: r.Short, Alias: r.Name})
 	})
 
-	e.GET("/:id", func(c echo.Context) error {
+	e.GET("/:id", func(c echo.Context) (err error) {
+		var alias string
 		id := c.Param("id")
 
 		s, isa := store.(StorageAlias)
 		if isa {
-			aliased, err := s.FetchAlias(id)
+			alias, err = s.FetchAlias(id)
 			if err != nil {
 				return err
 			}
-			if aliased != "" {
-				id = aliased
+			if alias != "" {
+				id = alias
 			}
 		}
 
@@ -201,6 +212,10 @@ func main() {
 
 		if err != nil {
 			return err
+		}
+
+		if err := metrics.Record(c.Request(), url, id, alias); err != nil {
+			log.Printf("Unable to record metrics: %v", err)
 		}
 
 		return c.Redirect(http.StatusMovedPermanently, url)
@@ -212,4 +227,12 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+
+	if closer, isa := identifier.(io.Closer); isa {
+		log.Println("Closing identifier")
+		closer.Close()
+	}
+	log.Println("Closing store")
+	store.Close()
+
 }
