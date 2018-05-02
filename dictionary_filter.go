@@ -3,6 +3,8 @@ package main
 import (
 	"bufio"
 	"os"
+	"regexp"
+	"strconv"
 	"strings"
 )
 
@@ -29,10 +31,12 @@ func (m *dictionaryFilter) Setup(c *shortieConfiguration) (err error) {
 	}
 	defer f.Close()
 
+	filterExpr := regexp.MustCompile(`^\w{1,` + strconv.Itoa(m.MaxLength) + `}$`)
+
 	scanner := bufio.NewScanner(f)
 	for scanner.Scan() {
 		str := strings.ToLower(strings.TrimSpace(scanner.Text()))
-		if len(str) <= m.MaxLength {
+		if filterExpr.MatchString(str) {
 			m.dictionary[str] = emptyStruct
 		}
 	}

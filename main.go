@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"errors"
 	"flag"
-	"fmt"
 	"html/template"
 	"io"
 	"log"
@@ -110,7 +109,7 @@ func main() {
 		}
 		if err := filter.Setup(config); err != nil {
 			log.Print(err)
-			log.Fatal("Unable to configure filter interface '%s'", v)
+			log.Fatalf("Unable to configure filter interface '%s'", v)
 		}
 		filters[i] = filter
 	}
@@ -124,7 +123,6 @@ func main() {
 	assetHandler := http.FileServer(assets.HTTPBox())
 
 	var indexTemplate *template.Template
-	fmt.Println(assets.String("index.tmpl"))
 	if ts, err := assets.String("index.tmpl"); ts != "" && err == nil {
 		log.Println("Rendering index from index.tmpl")
 		indexTemplate, err = template.New("index").Parse(ts)
