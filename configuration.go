@@ -12,6 +12,7 @@ import (
 type shortieConfiguration struct {
 	md               toml.MetaData             `toml:"-"`
 	DisableUI        bool                      `toml:"disable_ui"`
+	DisableAlias     bool                      `toml:"disable_alias"`
 	RedirectTo       string                    `tonl:"redirect_to"`
 	Listen           string                    `toml:"listen"`
 	IDInterface      string                    `toml:"id"`

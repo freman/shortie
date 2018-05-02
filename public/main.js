@@ -1,21 +1,28 @@
-(function() {
+(function () {
 	var copySupported = document.queryCommandSupported('copy');
 
 	var submitButton = document.getElementById("url-submit");
 	var input = document.getElementById("url-input");
+	var aliasInput = document.getElementById("alias-input");
 	var result = document.getElementById("result");
+
 	var output = document.getElementById("output");
+	var outputAlias = document.getElementById("output-alias");
 	var outputUrl = document.getElementById("url-output");
-	var copyButton = document.getElementById("copy");
+	var outputAliasUrl = document.getElementById("url-alias-output");
 
-	copyButton.addEventListener("click", function(e) {
-		e.preventDefault();
+	var copyButtons = document.getElementsByClassName("copy");
 
-		var url = outputUrl.href;
-		copyTextToClipboard(url);
-	})
+	for (var i = 0; i < copyButtons.length; i++) {
+		copyButtons[i].addEventListener("click", function (e) {
+			e.preventDefault();
 
-	submitButton.addEventListener("click", function(e) {
+			var url = e.target.parentElement.firstElementChild.firstElementChild.href;
+			copyTextToClipboard(url);
+		})
+	};
+
+	submitButton.addEventListener("click", function (e) {
 		e.preventDefault();
 
 		var url = input.value;
@@ -23,16 +30,28 @@
 			return;
 		}
 
+		var alias;
+		if (aliasInput) {
+			alias = aliasInput.value;
+		}
+
 		var request = new XMLHttpRequest();
 		request.open('POST', 'shrink.json', true);
 
-		request.onreadystatechange = function() {
+		request.onreadystatechange = function () {
 			if (this.readyState === 4) {
 				if (this.status >= 200 && this.status < 400) {
 					var data = JSON.parse(this.responseText);
 					outputUrl.href = window.location.href
 					outputUrl.pathname = "/" + data.short
 					outputUrl.innerText = outputUrl.href
+
+					if ((typeof data.alias) !== "undefined" && data.alias !== "") {
+						outputAliasUrl.href = window.location.href
+						outputAliasUrl.pathname = "/" + data.alias
+						outputAliasUrl.innerText = outputAliasUrl.href
+						outputAlias.style.display = "";
+					}
 
 					result.style.display = "";
 					output.style.display = "";
@@ -44,7 +63,7 @@
 		};
 
 		request.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-		request.send(JSON.stringify({url: url}));
+		request.send(JSON.stringify({ url: url, alias: alias }));
 		request = null;
 	})
 

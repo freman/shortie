@@ -5,6 +5,7 @@
 # Disable the ui
 # disable_ui = false
 # redirect_to = "https://example.com"
+# disable_alias = false
 
 # Which storage engine are we going to use?
 #

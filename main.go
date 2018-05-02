@@ -4,12 +4,16 @@ import (
 	"encoding/json"
 	"errors"
 	"flag"
+	"fmt"
+	"html/template"
 	"io"
 	"log"
 	"net"
 	"net/http"
 	"net/url"
 	"os"
+	"path"
+	"strings"
 	"time"
 
 	"github.com/GeertJohan/go.rice"
@@ -116,7 +120,18 @@ func main() {
 	e.Use(mw.Logger())
 	e.Use(mw.Recover())
 
-	assetHandler := http.FileServer(rice.MustFindBox("public").HTTPBox())
+	assets := rice.MustFindBox("public")
+	assetHandler := http.FileServer(assets.HTTPBox())
+
+	var indexTemplate *template.Template
+	fmt.Println(assets.String("index.tmpl"))
+	if ts, err := assets.String("index.tmpl"); ts != "" && err == nil {
+		log.Println("Rendering index from index.tmpl")
+		indexTemplate, err = template.New("index").Parse(ts)
+		if err != nil {
+			log.Fatal(err)
+		}
+	}
 
 	e.GET("/", func(c echo.Context) error {
 		if config.DisableUI {
@@ -134,6 +149,11 @@ func main() {
 				return c.Redirect(http.StatusFound, config.RedirectTo)
 			}
 			return echo.ErrNotFound
+		}
+
+		filename := path.Base(c.Request().URL.Path)
+		if (filename == "shorten" || strings.HasPrefix(filename, "index.htm")) && indexTemplate != nil {
+			return indexTemplate.Execute(c.Response().Writer, config)
 		}
 
 		http.StripPrefix("/shorten/", assetHandler).
