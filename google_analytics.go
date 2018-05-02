@@ -26,8 +26,10 @@ func (m *googleAnalytics) Record(r *http.Request, target, short, alias string) e
 	}
 
 	c.UserAgentOverride(r.Header.Get("User-Agent"))
+
 	c.CampaignID(short)
 	if alias != "" {
+		c.CampaignContent(alias)
 		c.CampaignKeyword(alias)
 		c.CampaignName(alias)
 	}

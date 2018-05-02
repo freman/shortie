@@ -240,12 +240,13 @@ func main() {
 
 		s, isa := store.(StorageAlias)
 		if isa {
-			alias, err = s.FetchAlias(id)
+			newID, err := s.FetchAlias(id)
 			if err != nil {
 				return err
 			}
-			if alias != "" {
-				id = alias
+			if newID != "" {
+				alias = id
+				id = newID
 			}
 		}
 
@@ -254,7 +255,6 @@ func main() {
 		if err != nil {
 			return err
 		}
-
 		if err := metrics.Record(c.Request(), url, id, alias); err != nil {
 			log.Printf("Unable to record metrics: %v", err)
 		}
