@@ -16,6 +16,7 @@ type shortieConfiguration struct {
 	Listen           string                    `toml:"listen"`
 	IDInterface      string                    `toml:"id"`
 	Metrics          string                    `toml:"metrics"`
+	Filters          []string                  `toml:"filters"`
 	StorageInterface string                    `toml:"storage"`
 	SubConfiguration map[string]toml.Primitive `toml:"config"`
 	TrustedUpstreams gct.Networks

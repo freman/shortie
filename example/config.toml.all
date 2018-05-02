@@ -26,6 +26,9 @@
 #
 # The other choices are "google_analytics"
 
+# Filtering out possible words or letter combinations
+# filters = ["dictionary_exclude"]
+
 # Configuration options for the storage engines
 #
 # vedis - supports disk file or :mem:,
@@ -69,3 +72,10 @@
 # save_interval = "5s"
 # skip = 10
 # character_map = "WAQNGLXCeaw3bHS18EpYvocJki2xh5PB9fj7FsMdTuZr6DmnVy4UKqtRzg"
+
+# Configuration options for the filters
+#
+# [config.dictionary_exclude]
+# file = "/usr/share/dict/words"
+# # Words longer than this won't be imported, saves a little memory
+# max_length = 12

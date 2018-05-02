@@ -9,6 +9,7 @@ Works out of the box with no external database or configuration however configur
  * vedis - A networkless redis, similar to sqlite
  * redis - Traditional redis
  * mongo - You guessed it, mongo
+ * boltdb - boltdb :D
 
 ## Quick start
 
@@ -34,6 +35,7 @@ There are example configuration files in the example directory but the basic gis
 
 ## Known Issues
 
- * At the moment it's using uuids as a method of shortening urls, it's basically cheap and dirty, I'll get around to making a couple of other drivers for generating ids
  * I've never actually used the mongo driver ;)
  * I googled the image used as a backdrop, it was all over the place with no attribution, if it's yours, let me know if you want me to remove it or credit you.
+ * Needs a refactor for some real structure
+ * Filters can cause lockup if they're porly defined or written

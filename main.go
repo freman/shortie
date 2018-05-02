@@ -98,6 +98,19 @@ func main() {
 		log.Fatal("Unable to configure metrics interface")
 	}
 
+	filters := make([]FilterInterface, len(config.Filters))
+	for i, v := range config.Filters {
+		filter := GetFilterInterface(v)
+		if filter == nil {
+			log.Fatalf("Invalid filter '%s' specified in configuration", v)
+		}
+		if err := filter.Setup(config); err != nil {
+			log.Print(err)
+			log.Fatal("Unable to configure filter interface '%s'", v)
+		}
+		filters[i] = filter
+	}
+
 	e := echo.New()
 
 	e.Use(mw.Logger())
@@ -139,7 +152,17 @@ func main() {
 		}
 
 		if url := r.Url.String(); url != "" {
-			id := identifier.Get()
+			var id string
+			for id == "" {
+				id = identifier.Get()
+				for _, filter := range filters {
+					if filter.Filter(id) {
+						id = ""
+						continue
+					}
+				}
+			}
+
 			if r.Alias != "" {
 				s, isa := store.(StorageAlias)
 				if !isa {
