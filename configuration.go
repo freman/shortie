@@ -11,6 +11,7 @@ import (
 
 type shortieConfiguration struct {
 	md               toml.MetaData             `toml:"-"`
+	RedirectCode     int                       `toml:"code"`
 	DisableUI        bool                      `toml:"disable_ui"`
 	DisableAlias     bool                      `toml:"disable_alias"`
 	RedirectTo       string                    `tonl:"redirect_to"`
@@ -27,6 +28,7 @@ func loadConfiguration(file string) (*shortieConfiguration, error) {
 	var err error
 	config := shortieConfiguration{
 		Listen:           ":3000",
+		RedirectCode:     http.StatusPermanentRedirect,
 		StorageInterface: "vedis",
 		IDInterface:      "snowflake",
 		Metrics:          "noop_analytics",

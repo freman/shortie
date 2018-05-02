@@ -6,7 +6,7 @@ var metricsInterfaces = map[string]func() MetricsInterface{}
 
 type MetricsInterface interface {
 	Setup(*shortieConfiguration) error
-	Record(*http.Request, string, string, string) error
+	Record(*http.Request, string, string, string) (*http.Cookie, error)
 }
 
 func RegisterMetricsInterface(name string, f func() MetricsInterface) {

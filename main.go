@@ -255,11 +255,15 @@ func main() {
 		if err != nil {
 			return err
 		}
-		if err := metrics.Record(c.Request(), url, id, alias); err != nil {
+		cookie, err := metrics.Record(c.Request(), url, id, alias)
+		if err != nil {
 			log.Printf("Unable to record metrics: %v", err)
 		}
+		if cookie != nil {
+			c.SetCookie(cookie)
+		}
 
-		return c.Redirect(http.StatusMovedPermanently, url)
+		return c.Redirect(config.RedirectCode, url)
 	})
 
 	e.Server.Addr = config.Listen

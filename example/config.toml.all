@@ -2,6 +2,9 @@
 # valid options are :port and ip:port
 # listen = "192.168.0.1:8118"
 
+# What kind of redirect do you want
+# code = 301
+
 # Disable the ui
 # disable_ui = false
 # redirect_to = "https://example.com"
@@ -65,6 +68,10 @@
 #
 # [config.google_analytics]
 # tracking_id = "UA-2xxxxx0-7"
+# camnpaign_id = "shortie"
+# campaign_prefix = "shortie_"
+# cookie_name = "sga"
+# cookie_prefix = "ga-"
 
 # Configuration options for the id generators
 #
