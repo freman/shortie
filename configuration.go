@@ -14,7 +14,7 @@ type shortieConfiguration struct {
 	RedirectCode     int                       `toml:"code"`
 	DisableUI        bool                      `toml:"disable_ui"`
 	DisableAlias     bool                      `toml:"disable_alias"`
-	RedirectTo       string                    `tonl:"redirect_to"`
+	RedirectTo       string                    `toml:"redirect_to"`
 	Listen           string                    `toml:"listen"`
 	IDInterface      string                    `toml:"id"`
 	Metrics          string                    `toml:"metrics"`
